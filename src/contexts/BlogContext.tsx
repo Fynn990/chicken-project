@@ -52,7 +52,7 @@ const initialBlogs: Blog[] = [
     comments: [
       {
         id: '101',
-        content: 'Great insights! I've been considering free-range for my small backyard flock. Do you have any tips for predator protection in a smaller space?',
+        content: "Great insights! I've been considering free-range for my small backyard flock. Do you have any tips for predator protection in a smaller space?",
         author: {
           id: '4',
           name: 'Thomas Wright',
@@ -71,7 +71,7 @@ const initialBlogs: Blog[] = [
     <p>One of the most noticeable benefits is improved immune function in the flock. Our chickens get sick less often, which means we don't need to use antibiotics – supporting our commitment to raising antibiotic-free poultry.</p>
     <p>Though organic feed costs more upfront, we've found that the chickens convert it more efficiently into meat, partly offsetting the higher cost. Plus, the premium customers are willing to pay for organic, high-quality chicken makes it a financially sound choice in the long run.</p>
     <p>If you're considering transitioning to organic feed, we recommend doing it gradually over a few weeks to allow the chickens' digestive systems to adjust. Also, look for local sources to reduce the environmental impact and potentially save on shipping costs.</p>`,
-    excerpt: 'Discover why we chose organic feed for our chickens and the many benefits we've observed in their health and the quality of their meat.',
+    excerpt: "Discover why we chose organic feed for our chickens and the many benefits we've observed in their health and the quality of their meat.",
     author: {
       id: '5',
       name: 'Robert Chen',
@@ -114,7 +114,7 @@ const initialBlogs: Blog[] = [
       },
       {
         id: '103',
-        content: 'Do you have any recommendations for using chicken in cold summer dishes? It's too hot to cook where I live!',
+        content: "Do you have any recommendations for using chicken in cold summer dishes? It's too hot to cook where I live!",
         author: {
           id: '7',
           name: 'Jason Patel',
