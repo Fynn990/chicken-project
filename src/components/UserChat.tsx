@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
-import { MessageCircle, Send, X } from 'lucide-react';
+import { MessageCircle, Send, X, LogOut } from 'lucide-react';
 import { useChat } from '../contexts/ChatContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 
 const UserChat = () => {
   const { sendMessage, getMessagesByUser, getUnreadMessagesCount, markMessagesAsRead } = useChat();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -93,6 +93,21 @@ const UserChat = () => {
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+
+  // Calculate chat position considering screen edges
+  const calculateChatPosition = () => {
+    if (!chatRef.current || !isOpen) return {};
+    
+    const viewportWidth = window.innerWidth;
+    const chatWidth = 320; // Width of the chat window (w-80 = 20rem = 320px)
+
+    // If chat would go off-screen to the right, position it to stay within view
+    if (position.x + chatWidth > viewportWidth) {
+      return { right: '20px', left: 'auto', top: `${position.y}px` };
+    }
+    
+    return { left: `${position.x}px`, top: `${position.y}px` };
+  };
   
   const toggleChat = () => {
     setIsOpen(prev => !prev);
@@ -104,6 +119,11 @@ const UserChat = () => {
     
     sendMessage(message);
     setMessage('');
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsOpen(false);
   };
   
   useEffect(() => {
@@ -118,7 +138,7 @@ const UserChat = () => {
     <div
       ref={chatRef}
       className={`fixed z-40 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-      style={{ left: `${position.x}px`, top: `${position.y}px` }}
+      style={isOpen ? calculateChatPosition() : { left: `${position.x}px`, top: `${position.y}px` }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
     >
@@ -129,9 +149,27 @@ const UserChat = () => {
         >
           <div className="flex justify-between items-center p-3 border-b bg-cartus-primary text-white rounded-t-lg">
             <h3 className="font-medium">Chat with Admin</h3>
-            <Button variant="ghost" size="icon" className="text-white hover:bg-cartus-primary/90" onClick={toggleChat}>
-              <X size={18} />
-            </Button>
+            <div className="flex items-center space-x-2">
+              {isAuthenticated && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="text-white hover:bg-cartus-primary/90" 
+                  onClick={handleLogout}
+                  title="Logout"
+                >
+                  <LogOut size={18} />
+                </Button>
+              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="text-white hover:bg-cartus-primary/90" 
+                onClick={toggleChat}
+              >
+                <X size={18} />
+              </Button>
+            </div>
           </div>
           
           <div className="flex-1 overflow-y-auto p-3 space-y-3">

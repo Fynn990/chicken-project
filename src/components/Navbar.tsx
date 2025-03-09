@@ -1,16 +1,18 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingCart, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from './ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { cart } = useCart();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin } = useAuth();
   
   // Change navbar style on scroll
   useEffect(() => {
@@ -37,6 +39,10 @@ const Navbar = () => {
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
+  
+  const handleLogout = () => {
+    logout();
+  };
   
   const cartItemCount = cart.items.reduce((total, item) => total + item.quantity, 0);
   
@@ -85,9 +91,33 @@ const Navbar = () => {
             </Link>
             
             {isAuthenticated ? (
-              <Link to="/dashboard" className="p-2 rounded-full hover:bg-cartus-neutral/10 transition-colors duration-200">
-                <User className="h-5 w-5" />
-              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="p-2 rounded-full hover:bg-cartus-neutral/10">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem className="flex items-center">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>{user?.name}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="w-full cursor-pointer">Dashboard</Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="w-full cursor-pointer">My Account</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-500 cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <Link 
                 to="/login" 
@@ -135,10 +165,21 @@ const Navbar = () => {
                 </Link>
                 
                 {isAuthenticated ? (
-                  <Link to="/dashboard" className="flex items-center space-x-2">
-                    <User className="h-5 w-5" />
-                    <span>Account</span>
-                  </Link>
+                  <div className="flex items-center space-x-4">
+                    <Link to="/dashboard" className="flex items-center space-x-2">
+                      <User className="h-5 w-5" />
+                      <span>Account</span>
+                    </Link>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="flex items-center space-x-1 text-red-500" 
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="h-5 w-5" />
+                      <span>Logout</span>
+                    </Button>
+                  </div>
                 ) : (
                   <Link 
                     to="/login" 
