@@ -50,6 +50,11 @@ const Navbar = () => {
         <nav className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center">
+            <img 
+              src="/lovable-uploads/9598d1a9-b4f8-4364-8815-73325456b8b4.png" 
+              alt="Cartus Agri Logo" 
+              className="h-10 w-10 mr-2"
+            />
             <span className="text-xl font-semibold text-cartus-primary">Cartus Agri</span>
           </Link>
           
