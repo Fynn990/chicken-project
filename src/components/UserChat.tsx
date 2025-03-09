@@ -71,9 +71,14 @@ const UserChat = () => {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     });
+    
+    // Add event listeners for smoother dragging
+    document.addEventListener('mousemove', handleMouseMoveDoc);
+    document.addEventListener('mouseup', handleMouseUpDoc);
   };
   
-  const handleMouseMove = (e: React.MouseEvent) => {
+  // Using document events for smoother dragging
+  const handleMouseMoveDoc = (e: MouseEvent) => {
     if (!isDragging) return;
     
     e.preventDefault();
@@ -90,23 +95,45 @@ const UserChat = () => {
     });
   };
   
+  const handleMouseUpDoc = () => {
+    setIsDragging(false);
+    document.removeEventListener('mousemove', handleMouseMoveDoc);
+    document.removeEventListener('mouseup', handleMouseUpDoc);
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    // We no longer need this function as we're using document events
+    if (!isDragging) return;
+  };
+  
   const handleMouseUp = () => {
+    // Component-level mouseup - not needed anymore
     setIsDragging(false);
   };
 
-  // Calculate chat position considering screen edges
+  // Calculate chat position for open state
   const calculateChatPosition = () => {
     if (!chatRef.current || !isOpen) return {};
     
     const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
     const chatWidth = 320; // Width of the chat window (w-80 = 20rem = 320px)
-
-    // If chat would go off-screen to the right, position it to stay within view
+    const chatHeight = 384; // Height of the chat window (h-96 = 24rem = 384px)
+    
+    let left = position.x;
+    let top = position.y;
+    
+    // If chat would go off-screen to the right, adjust position
     if (position.x + chatWidth > viewportWidth) {
-      return { right: '20px', left: 'auto', top: `${position.y}px` };
+      left = viewportWidth - chatWidth - 20; // 20px padding
     }
     
-    return { left: `${position.x}px`, top: `${position.y}px` };
+    // If chat would go off-screen to the bottom, adjust position
+    if (position.y + chatHeight > viewportHeight) {
+      top = viewportHeight - chatHeight - 20; // 20px padding
+    }
+    
+    return { left: `${left}px`, top: `${top}px` };
   };
   
   const toggleChat = () => {
@@ -127,10 +154,10 @@ const UserChat = () => {
   };
   
   useEffect(() => {
-    document.addEventListener('mouseup', handleMouseUp);
-    
+    // Clean up event listeners when component unmounts
     return () => {
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMouseMoveDoc);
+      document.removeEventListener('mouseup', handleMouseUpDoc);
     };
   }, []);
   

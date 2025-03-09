@@ -119,12 +119,20 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link 
-                to="/login" 
-                className="text-sm font-medium px-4 py-2 rounded-full bg-cartus-primary text-white hover:bg-cartus-primary/90 transition-colors duration-200"
-              >
-                Sign In
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link 
+                  to="/login" 
+                  className="text-sm font-medium px-4 py-2 rounded-full border border-cartus-primary text-cartus-primary hover:bg-cartus-primary/10 transition-colors duration-200"
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/signup" 
+                  className="text-sm font-medium px-4 py-2 rounded-full bg-cartus-primary text-white hover:bg-cartus-primary/90 transition-colors duration-200"
+                >
+                  Sign Up
+                </Link>
+              </div>
             )}
           </div>
           
@@ -181,12 +189,20 @@ const Navbar = () => {
                     </Button>
                   </div>
                 ) : (
-                  <Link 
-                    to="/login" 
-                    className="text-sm font-medium px-4 py-2 rounded-full bg-cartus-primary text-white"
-                  >
-                    Sign In
-                  </Link>
+                  <div className="flex flex-col space-y-2">
+                    <Link 
+                      to="/login" 
+                      className="text-sm font-medium px-4 py-2 rounded-full border border-cartus-primary text-cartus-primary text-center"
+                    >
+                      Sign In
+                    </Link>
+                    <Link 
+                      to="/signup" 
+                      className="text-sm font-medium px-4 py-2 rounded-full bg-cartus-primary text-white text-center"
+                    >
+                      Sign Up
+                    </Link>
+                  </div>
                 )}
               </div>
             </div>
