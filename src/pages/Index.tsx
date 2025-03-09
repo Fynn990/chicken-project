@@ -1,6 +1,7 @@
 
 import Hero from '../components/Hero';
 import FeaturedProducts from '../components/FeaturedProducts';
+import BlogSection from '../components/BlogSection';
 import Layout from '../components/Layout';
 import { ChevronRight, Award, Truck, ThumbsUp, Leaf } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -58,6 +59,8 @@ const Index = () => {
       </section>
       
       <FeaturedProducts />
+      
+      <BlogSection />
       
       {/* Farm story section */}
       <section className="py-20 bg-cartus-neutral/10 relative overflow-hidden">

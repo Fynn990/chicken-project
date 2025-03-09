@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -67,5 +66,25 @@ export interface Message {
   receiverId: string;
   content: string;
   read: boolean;
+  createdAt: string;
+}
+
+export interface Blog {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string;
+  author: User;
+  createdAt: string;
+  imageUrl?: string;
+  tags: string[];
+  likes: number;
+  comments: Comment[];
+}
+
+export interface Comment {
+  id: string;
+  content: string;
+  author: User;
   createdAt: string;
 }
