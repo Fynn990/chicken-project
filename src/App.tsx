@@ -12,6 +12,7 @@ import { ChatProvider } from "./contexts/ChatContext";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
@@ -38,6 +39,7 @@ const App = () => (
                     <Route path="/" element={<Index />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/login" element={<Login />} />
                     
                     {/* Admin Routes */}
                     <Route path="/admin" element={
