@@ -1,10 +1,11 @@
 
 import AdminLayout from '../../components/AdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Package, ThumbsUp, FileText, Users } from 'lucide-react';
+import { Package, ThumbsUp, FileText, Users, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useProducts } from '../../contexts/ProductContext';
 import { useBlog } from '../../contexts/BlogContext';
+import { Button } from '@/components/ui/button';
 
 const AdminDashboard = () => {
   const { products } = useProducts();

@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Blog, User } from '../types';
@@ -8,6 +7,7 @@ interface BlogContextType {
   addBlog: (title: string, content: string, excerpt: string, tags: string[], imageUrl?: string) => Promise<boolean>;
   likeBlog: (blogId: string) => void;
   addComment: (blogId: string, content: string) => Promise<boolean>;
+  deleteBlog: (blogId: string) => void;
 }
 
 const BlogContext = createContext<BlogContextType | undefined>(undefined);
@@ -24,7 +24,6 @@ interface BlogProviderProps {
   children: ReactNode;
 }
 
-// Sample user for demo blogs
 const demoAuthor: User = {
   id: '3',
   name: 'Maria Johnson',
@@ -33,7 +32,6 @@ const demoAuthor: User = {
   avatar: 'https://i.pravatar.cc/150?img=5',
 };
 
-// Sample blogs data
 const initialBlogs: Blog[] = [
   {
     id: '1',
@@ -133,11 +131,8 @@ export const BlogProvider = ({ children }: BlogProviderProps) => {
 
   const addBlog = async (title: string, content: string, excerpt: string, tags: string[], imageUrl?: string) => {
     try {
-      // In a real app, you'd call an API endpoint
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Get current user from auth context
-      // For simplicity, we're using a fake user here
       const currentUser: User = {
         id: '2',
         name: 'John Doe',
@@ -191,11 +186,8 @@ export const BlogProvider = ({ children }: BlogProviderProps) => {
 
   const addComment = async (blogId: string, content: string) => {
     try {
-      // In a real app, you'd call an API endpoint
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      // Get current user from auth context
-      // For simplicity, we're using a fake user here
       const currentUser: User = {
         id: '2',
         name: 'John Doe',
@@ -240,6 +232,10 @@ export const BlogProvider = ({ children }: BlogProviderProps) => {
     }
   };
 
+  const deleteBlog = (blogId: string) => {
+    setBlogs(prevBlogs => prevBlogs.filter(blog => blog.id !== blogId));
+  };
+
   return (
     <BlogContext.Provider
       value={{
@@ -247,6 +243,7 @@ export const BlogProvider = ({ children }: BlogProviderProps) => {
         addBlog,
         likeBlog,
         addComment,
+        deleteBlog,
       }}
     >
       {children}
