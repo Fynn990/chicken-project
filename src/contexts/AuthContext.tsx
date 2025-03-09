@@ -1,7 +1,7 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -28,13 +28,13 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
   
-  // Check if user is already logged in (from localStorage)
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -47,15 +47,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false);
   }, []);
   
-  // This is a mock implementation for frontend-only auth
-  // In a real app, you'd call an API endpoint
   const login = async (email: string, password: string) => {
     try {
-      // Mock API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock successful login for demo purposes
-      // In real app, you'd validate credentials with backend
       if (email === 'admin@cartusagri.com' && password === 'admin123') {
         const adminUser: User = {
           id: '1',
@@ -114,10 +109,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   
   const register = async (name: string, email: string, password: string) => {
     try {
-      // Mock API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // In a real app, you'd send this to your backend
       const newUser: User = {
         id: `user-${Date.now()}`,
         name,
@@ -155,6 +148,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       title: 'Logged out',
       description: 'You have been successfully logged out.',
     });
+    
+    navigate('/');
   };
   
   if (isLoading) {
