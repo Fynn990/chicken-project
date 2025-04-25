@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               id: profile.id,
               name: profile.name,
               email: profile.email,
-              role: profile.role,
+              role: profile.role as 'user' | 'admin', // Type assertion to ensure role is correctly typed
               avatar: profile.avatar
             });
           }
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             id: profile.id,
             name: profile.name,
             email: profile.email,
-            role: profile.role,
+            role: profile.role as 'user' | 'admin', // Type assertion to ensure role is correctly typed
             avatar: profile.avatar
           });
         }
