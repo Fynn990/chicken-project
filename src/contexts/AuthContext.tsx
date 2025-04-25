@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   user: User | null;
@@ -33,134 +34,151 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const isAuthenticated = !!user;
   const isAdmin = user?.role === 'admin';
-  
-  // Check if user is already logged in (from localStorage)
+
+  // Check for existing session on mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
+    const initAuth = async () => {
       try {
-        setUser(JSON.parse(storedUser));
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profile) {
+            setUser({
+              id: profile.id,
+              name: profile.name,
+              email: profile.email,
+              role: profile.role,
+              avatar: profile.avatar
+            });
+          }
+        }
       } catch (error) {
-        console.error('Failed to parse user from localStorage:', error);
+        console.error('Error checking auth session:', error);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    initAuth();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          setUser({
+            id: profile.id,
+            name: profile.name,
+            email: profile.email,
+            role: profile.role,
+            avatar: profile.avatar
+          });
+        }
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
-  
-  // This is a mock implementation for frontend-only auth
-  // In a real app, you'd call an API endpoint
+
   const login = async (email: string, password: string) => {
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock successful login for demo purposes
-      // In real app, you'd validate credentials with backend
-      if (email === 'admin@cartusagri.com' && password === 'admin123') {
-        const adminUser: User = {
-          id: '1',
-          name: 'Admin User',
-          email: 'admin@cartusagri.com',
-          role: 'admin',
-        };
-        
-        setUser(adminUser);
-        localStorage.setItem('user', JSON.stringify(adminUser));
-        
-        toast({
-          title: 'Login successful!',
-          description: 'Welcome back, Admin!',
-        });
-        
-        return true;
-      } else if (email === 'user@example.com' && password === 'user123') {
-        const regularUser: User = {
-          id: '2',
-          name: 'John Doe',
-          email: 'user@example.com',
-          role: 'user',
-        };
-        
-        setUser(regularUser);
-        localStorage.setItem('user', JSON.stringify(regularUser));
-        
-        toast({
-          title: 'Login successful!',
-          description: 'Welcome back, John!',
-        });
-        
-        return true;
-      } else {
-        toast({
-          title: 'Login failed',
-          description: 'Invalid email or password',
-          variant: 'destructive',
-        });
-        
-        return false;
-      }
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (signInError) throw signInError;
+
+      toast({
+        title: 'Login successful!',
+        description: 'Welcome back!',
+      });
+
+      return true;
     } catch (error) {
       console.error('Login error:', error);
       
       toast({
         title: 'Login failed',
-        description: 'Something went wrong. Please try again.',
+        description: 'Invalid email or password',
         variant: 'destructive',
       });
       
       return false;
     }
   };
-  
+
   const register = async (name: string, email: string, password: string) => {
     try {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // In a real app, you'd send this to your backend
-      const newUser: User = {
-        id: `user-${Date.now()}`,
-        name,
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
-        role: 'user',
-      };
-      
-      setUser(newUser);
-      localStorage.setItem('user', JSON.stringify(newUser));
-      
+        password,
+        options: {
+          data: {
+            name: name,
+          }
+        }
+      });
+
+      if (signUpError) throw signUpError;
+
       toast({
         title: 'Registration successful!',
-        description: `Welcome to Cartus Agri, ${name}!`,
+        description: 'Please check your email to confirm your account.',
       });
-      
+
       return true;
     } catch (error) {
       console.error('Registration error:', error);
-      
+
       toast({
         title: 'Registration failed',
         description: 'Something went wrong. Please try again.',
         variant: 'destructive',
       });
-      
+
       return false;
     }
   };
-  
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
-    
-    toast({
-      title: 'Logged out',
-      description: 'You have been successfully logged out.',
-    });
+
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+      setUser(null);
+      
+      toast({
+        title: 'Logged out',
+        description: 'You have been successfully logged out.',
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      
+      toast({
+        title: 'Logout failed',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
-  
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
-  
+
   return (
     <AuthContext.Provider
       value={{
